@@ -1,0 +1,39 @@
+server:
+  port: 8081
+
+spring:
+  datasource:
+    url: jdbc:h2:mem:testdb
+    driver-class-name: org.h2.Driver
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+  h2:
+    console:
+      enabled: true
+  profiles:
+    include: local
+
+# Google API Configuration
+google:
+  api:
+    key: ${GOOGLE_API_KEY:PUT_YOUR_GOOGLE_API_KEY_HERE}
+    solar:
+      base-url: https://solar.googleapis.com/v1
+    weather:
+      base-url: https://weather.googleapis.com/v1
+    elevation:
+      base-url: https://maps.googleapis.com/maps/api/elevation/json
+
+# Solar calculation defaults
+solar:
+  default:
+    panel-efficiency: 0.20
+    performance-ratio: 0.75
+    usable-fraction: 0.7
+    
+# Logging configuration for debugging
+logging:
+  level:
+    com.solarterrain.analytics_backend: DEBUG
+    org.springframework.web.client: DEBUG

@@ -1,0 +1,12 @@
+# Local Environment Variables for Development
+# Copy this file and rename to 'application-local.yml' 
+# Then replace 'your-google-api-key-here' with your actual API key
+
+google:
+  api:
+    key: your-google-api-key-here
+
+# Add to application.yml:
+# spring:
+#   profiles:
+#     active: local

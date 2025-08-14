@@ -1,0 +1,164 @@
+api-keys.txt
+run_solar_all.bat
+**/api-keys-local.yml
+**/api-keys-local.yaml
+**/firebase_options_local.dart
+
+# Firebase configuration 
+lib/firebase_options.dart
+**/firebase_options.dart
+firebase.json
+
+# Google Services files 
+**/google-services.json
+android/app/google-services.json
+
+# Web files 
+**/web/index.html
+web/index.html
+
+**/index_local.html
+**/*local.json
+**/*local.properties
+**/.env
+**/.env.local
+**/.env.production
+
+# Firebase Service Account Keys
+**/serviceAccount.json
+**/firebase-adminsdk-*.json
+**/google-services.json
+**/google-services-local.json
+
+# Google Cloud Service Account Keys  
+**/credentials.json
+**/service-account-*.json
+
+# Chrome Browser Data
+**/.dart_tool/chrome-device/
+**/chrome-device/
+**/Default/Login Data*
+**/Default/Secure*
+**/Default/Account*
+**/Default/Service Worker/
+**/Default/Trust*
+
+# Security Scanning Cache
+.cache_ggshield
+
+# Additional Sensitive Files
+**/config.xml
+**/secrets.json
+**/private-key.json
+**/*-key.json
+**/*-key.pem
+**/*-cert.pem
+**/ssl-cert/
+**/certificates/
+
+# Databases
+**/*.db
+**/*.sqlite
+**/*.sqlite3
+**/database.json
+
+# Keys
+.cache_ggshield
+API_KEYS_SETUP.txt
+**/API_KEYS_SETUP.txt
+
+
+# Prevent accidental commit of modified secure files
+firebase_options.dart  
+
+# Backend (Spring Boot)
+backend/analytics-backend/target/
+backend/analytics-backend/.mvn/
+backend/analytics-backend/mvnw
+backend/analytics-backend/mvnw.cmd
+backend/analytics-backend/HELP.md
+backend/analytics-backend/API_KEYS_SETUP.txt
+
+# Configuration with secrets
+backend/analytics-backend/src/main/resources/application-prod.yml
+backend/analytics-backend/src/main/resources/application-secrets.yml
+backend/analytics-backend/src/main/resources/api-keys-local.yml
+backend/analytics-backend/target/classes/api-keys-local.yml
+
+# All compiled files 
+backend/analytics-backend/target/
+**/target/classes/**/api-keys*
+**/target/classes/**/application-local*
+**/target/classes/**/firebase*
+**/target/classes/**/google-services*
+
+# Build artifacts 
+**/build/web/
+**/build/**/index.html
+
+# Frontend (Flutter)
+frontend/flutter_solar_terrain_analytics/.dart_tool/
+frontend/flutter_solar_terrain_analytics/.fleet
+frontend/flutter_solar_terrain_analytics/.fvm/
+frontend/flutter_solar_terrain_analytics/.packages
+frontend/flutter_solar_terrain_analytics/.pub-cache/
+frontend/flutter_solar_terrain_analytics/.pub/
+frontend/flutter_solar_terrain_analytics/build/
+frontend/flutter_solar_terrain_analytics/flutter_*.png
+frontend/flutter_solar_terrain_analytics/linked_*.ds
+frontend/flutter_solar_terrain_analytics/unlinked.ds
+frontend/flutter_solar_terrain_analytics/unlinked_spec.ds
+
+# Flutter Generated Files
+frontend/flutter_solar_terrain_analytics/lib/generated_plugin_registrant.dart
+frontend/flutter_solar_terrain_analytics/ios/Flutter/Generated.xcconfig
+frontend/flutter_solar_terrain_analytics/ios/Flutter/flutter_export_environment.sh
+frontend/flutter_solar_terrain_analytics/macos/Flutter/GeneratedPluginRegistrant.swift
+
+# Flutter web files 
+frontend/flutter_solar_terrain_analytics/web/index.html
+**/web/index.html
+
+# Flutter build outputs 
+frontend/flutter_solar_terrain_analytics/build/
+**/build/web/
+**/build/app/
+**/build/**/index.html
+**/build/**/main.dart.js
+
+# IDE and OS Files
+.idea/
+.vscode/settings.json
+*.swp
+*.swo
+*~
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Logs and Temporary Files
+*.log
+logs/
+temp/
+tmp/
+*.tmp
+*.temp
+*.pid
+*.seed
+*.pid.lock
+run_log.txt
+flutter_*.log
+
+# Node.js 
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
