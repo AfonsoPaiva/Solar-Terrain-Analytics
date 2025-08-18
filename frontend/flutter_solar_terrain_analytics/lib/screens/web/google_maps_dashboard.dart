@@ -3,7 +3,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:latlong2/latlong.dart' as ll;
 import '../../services/api_service.dart';
-import '../../models/solar_area.dart';
+import '../../models/saved_site.dart';
 import '../../widgets/solar_analysis_panel.dart';
 
 class GoogleMapsDashboard extends StatefulWidget {
@@ -28,13 +28,13 @@ class _GoogleMapsDashboardState extends State<GoogleMapsDashboard> {
   bool _isDrawingMode = false;
   bool _showHeatmap = true;
 
-  // Saved terrains (using SolarArea instead of SavedSite)
-  List<SolarArea> _savedAreas = [];
+  // Saved terrains (using SavedSite)
+  List<SavedSite> _savedSites = [];
 
   @override
   void initState() {
     super.initState();
-    _loadSavedAreas();
+    _loadSavedSites();
   }
 
   @override
@@ -46,7 +46,7 @@ class _GoogleMapsDashboardState extends State<GoogleMapsDashboard> {
           IconButton(
             tooltip: 'Reload saved',
             icon: const Icon(Icons.refresh),
-            onPressed: _loadSavedAreas,
+            onPressed: _loadSavedSites,
           ),
           IconButton(
             tooltip: 'Logout',
@@ -152,12 +152,12 @@ class _GoogleMapsDashboardState extends State<GoogleMapsDashboard> {
                             IconButton(
                               icon: const Icon(Icons.refresh),
                               tooltip: 'Reload',
-                              onPressed: _loadSavedAreas,
+                              onPressed: _loadSavedSites,
                             ),
                           ],
                         ),
                       ),
-                      Expanded(child: _buildSavedAreasList()),
+                      Expanded(child: _buildSavedSitesList()),
                     ],
                   ),
                 ),
@@ -407,7 +407,9 @@ class _GoogleMapsDashboardState extends State<GoogleMapsDashboard> {
     setState(() => _isAnalyzing = true);
 
     try {
-      final result = await ApiService.analyzeArea(polygon);
+      // Convert latlong2 LatLng to Google Maps LatLng for API call
+      final googleMapsPolygon = polygon.map((p) => LatLng(p.latitude, p.longitude)).toList();
+      final result = await ApiService.analyzeArea(googleMapsPolygon);
 
       setState(() {
         _analysisData = result;
@@ -459,12 +461,14 @@ class _GoogleMapsDashboardState extends State<GoogleMapsDashboard> {
 
     if (result != null && result.trim().isNotEmpty) {
       try {
-        final success = await ApiService.saveSitePolygon(result.trim(), _selectedAreaLatLong!);
+        // Convert latlong2 LatLng to Google Maps LatLng for API call
+        final googleMapsPolygon = _selectedAreaLatLong!.map((p) => LatLng(p.latitude, p.longitude)).toList();
+        final success = await ApiService.saveSitePolygon(result.trim(), googleMapsPolygon);
         if (success) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('Area saved successfully')),
           );
-          _loadSavedAreas();
+          _loadSavedSites();
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('Failed to save area')),
@@ -478,110 +482,70 @@ class _GoogleMapsDashboardState extends State<GoogleMapsDashboard> {
     }
   }
 
-  Future<void> _loadSavedAreas() async {
+  Future<void> _loadSavedSites() async {
     try {
-      final areas = await ApiService.getSavedAreas();
-      setState(() => _savedAreas = areas);
+      final sites = await ApiService.getSavedSites();
+      setState(() => _savedSites = sites);
     } catch (e) {
-      print('Error loading saved areas: $e');
-      // Fallback to saved sites if areas not available
-      try {
-        await ApiService.getSavedSites();
-        // Convert sites to a simple display format if needed
-        setState(() {
-          _savedAreas = []; // Will be handled in the UI
-        });
-      } catch (e2) {
-        print('Error loading saved sites: $e2');
-      }
+      print('Error loading saved sites: $e');
+      setState(() => _savedSites = []);
     }
   }
 
-  Widget _buildSavedAreasList() {
-    if (_savedAreas.isEmpty) {
+  Widget _buildSavedSitesList() {
+    if (_savedSites.isEmpty) {
       return const Center(
-        child: Text('No saved areas yet', style: TextStyle(color: Colors.grey)),
+        child: Text('No saved sites yet', style: TextStyle(color: Colors.grey)),
       );
     }
 
     return ListView.builder(
       padding: const EdgeInsets.symmetric(horizontal: 16),
-      itemCount: _savedAreas.length,
+      itemCount: _savedSites.length,
       itemBuilder: (context, index) {
-        final area = _savedAreas[index];
+        final site = _savedSites[index];
         return Card(
           margin: const EdgeInsets.only(bottom: 8),
           child: ListTile(
-            title: Text(area.name),
-            subtitle: Text('${area.polygon.length} points'),
+            title: Text('Site ${site.id ?? 'Unknown'}'),
+            subtitle: Text('Solar: ${site.solarPotential.toStringAsFixed(1)} kWh/m²'),
             trailing: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
                 IconButton(
                   icon: const Icon(Icons.visibility),
                   tooltip: 'View on map',
-                  onPressed: () => _viewAreaOnMap(area),
+                  onPressed: () => _viewSiteOnMap(site),
                 ),
                 IconButton(
                   icon: const Icon(Icons.delete),
                   tooltip: 'Delete',
-                  onPressed: () => _deleteArea(area),
+                  onPressed: () => _deleteSite(site),
                 ),
               ],
             ),
-            onTap: () => _viewAreaOnMap(area),
+            onTap: () => _viewSiteOnMap(site),
           ),
         );
       },
     );
   }
 
-  void _viewAreaOnMap(SolarArea area) {
-    // Convert latlong2 LatLng to Google Maps LatLng
-    final points = area.polygon.map((p) => LatLng(p.latitude, p.longitude)).toList();
-    setState(() {
-      _selectedArea = points;
-      _selectedAreaLatLong = area.polygon;
-      _analysisData = area.detailedAnalysis;
-      _isDrawingMode = false;
-      _drawingPoints.clear();
-      _updatePolygons();
-    });
-
-    // Update heatmap if available
-    if (area.detailedAnalysis['heatmapData'] != null) {
-      _updateHeatmapCircles(area.detailedAnalysis['heatmapData']);
-    }
-
-    // Center map on the area
-    if (points.isNotEmpty) {
-      double minLat = points.first.latitude;
-      double maxLat = points.first.latitude;
-      double minLng = points.first.longitude;
-      double maxLng = points.first.longitude;
-
-      for (final point in points) {
-        minLat = minLat < point.latitude ? minLat : point.latitude;
-        maxLat = maxLat > point.latitude ? maxLat : point.latitude;
-        minLng = minLng < point.longitude ? minLng : point.longitude;
-        maxLng = maxLng > point.longitude ? maxLng : point.longitude;
-      }
-
-      final center = LatLng((minLat + maxLat) / 2, (minLng + maxLng) / 2);
-      _mapController?.animateCamera(
-        CameraUpdate.newCameraPosition(
-          CameraPosition(target: center, zoom: 10.0),
-        ),
-      );
-    }
+  void _viewSiteOnMap(SavedSite site) {
+    final location = LatLng(site.latitude, site.longitude);
+    _mapController?.animateCamera(
+      CameraUpdate.newCameraPosition(
+        CameraPosition(target: location, zoom: 15.0),
+      ),
+    );
   }
 
-  Future<void> _deleteArea(SolarArea area) async {
+  Future<void> _deleteSite(SavedSite site) async {
     final confirm = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Delete Area'),
-        content: Text('Are you sure you want to delete "${area.name}"?'),
+        title: const Text('Delete Site'),
+        content: Text('Are you sure you want to delete Site ${site.id}?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
@@ -595,17 +559,17 @@ class _GoogleMapsDashboardState extends State<GoogleMapsDashboard> {
       ),
     );
 
-    if (confirm == true && area.id != null) {
+    if (confirm == true && site.id != null) {
       try {
-        final success = await ApiService.deleteSite(area.id!);
+        final success = await ApiService.deleteSite(site.id!);
         if (success) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Area deleted successfully')),
+            const SnackBar(content: Text('Site deleted successfully')),
           );
-          _loadSavedAreas();
+          _loadSavedSites();
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Failed to delete area')),
+            const SnackBar(content: Text('Failed to delete site')),
           );
         }
       } catch (e) {

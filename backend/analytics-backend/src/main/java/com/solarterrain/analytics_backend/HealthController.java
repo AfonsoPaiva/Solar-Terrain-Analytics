@@ -13,4 +13,12 @@ public class HealthController {
                 "status", "UP",
                 "ts", System.currentTimeMillis());
     }
+
+    @GetMapping("/api/test")
+    public Map<String, Object> test() {
+        return Map.of(
+                "message", "Backend connection successful",
+                "status", "OK",
+                "timestamp", System.currentTimeMillis());
+    }
 }

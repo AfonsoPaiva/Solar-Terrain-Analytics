@@ -24,13 +24,16 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration cfg = new CorsConfiguration();
-        // Flutter web usa uma porta aleatória (ex: 53549). Usamos patterns.
-        cfg.setAllowedOriginPatterns(List.of("http://localhost:*", "http://127.0.0.1:*"));
-        // Em desenvolvimento podemos liberar todos os métodos e headers necessários.
-        cfg.setAllowedMethods(List.of("GET", "POST", "OPTIONS"));
-        cfg.setAllowedHeaders(List.of("Authorization", "Content-Type", "Accept"));
-        // Se não estiver a usar cookies/sessions, credenciais podem ser false.
-        // Authorization header funciona sem cookies.
+        // Permitir origens web e mobile
+        cfg.setAllowedOriginPatterns(List.of(
+                "http://localhost:*",
+                "http://127.0.0.1:*",
+                "http://10.0.2.2:*", // Android emulator
+                "*" // Para desenvolvimento mobile
+        ));
+        // Métodos necessários para web e mobile
+        cfg.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        cfg.setAllowedHeaders(List.of("*"));
         cfg.setAllowCredentials(false);
         cfg.setMaxAge(3600L);
         UrlBasedCorsConfigurationSource src = new UrlBasedCorsConfigurationSource();

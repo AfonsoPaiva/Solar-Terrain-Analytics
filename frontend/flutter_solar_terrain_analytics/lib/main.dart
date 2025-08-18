@@ -1,23 +1,72 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'firebase_options.dart';
 import 'screens/auth_wrapper.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  
+  // Enhanced error handling
   FlutterError.onError = (details) {
     FlutterError.dumpErrorToConsole(details);
+    debugPrint('Flutter Error: ${details.exceptionAsString()}');
   };
+  
   try {
+    debugPrint('Initializing Firebase...');
     await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform,
     );
     debugPrint('Firebase initialized successfully');
-  } catch (e) {
+    
+    // Test Firebase Auth connection
+    FirebaseAuth.instance.authStateChanges().listen((user) {
+      debugPrint('Auth state changed: ${user?.email ?? 'not logged in'}');
+    });
+    
+    runApp(const SolarAnalyticsApp());
+    
+  } catch (e, stackTrace) {
     debugPrint('Firebase initialization error: $e');
+    debugPrint('Stack trace: $stackTrace');
+    
+    // Run app even if Firebase fails
+    runApp(const ErrorApp());
   }
-  debugPrint('Launching SolarAnalyticsApp...');
-  runApp(const SolarAnalyticsApp());
+}
+
+class ErrorApp extends StatelessWidget {
+  const ErrorApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Solar Terrain Analytics - Error',
+      home: Scaffold(
+        appBar: AppBar(
+          title: const Text('Initialization Error'),
+          backgroundColor: Colors.red,
+          foregroundColor: Colors.white,
+        ),
+        body: const Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.error_outline, size: 64, color: Colors.red),
+              SizedBox(height: 16),
+              Text(
+                'Failed to initialize Firebase',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+              SizedBox(height: 8),
+              Text('Check the console for details'),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 }
 
 class SolarAnalyticsApp extends StatelessWidget {

@@ -1,5 +1,6 @@
 api-keys.txt
 run_solar_all.bat
+install_mobile.bat
 **/api-keys-local.yml
 **/api-keys-local.yaml
 **/firebase_options_local.dart
@@ -48,6 +49,7 @@ web/index.html
 
 # Additional Sensitive Files
 **/config.xml
+**/AndroidManifest.xml
 **/secrets.json
 **/private-key.json
 **/*-key.json
@@ -84,6 +86,7 @@ backend/analytics-backend/src/main/resources/application-prod.yml
 backend/analytics-backend/src/main/resources/application-secrets.yml
 backend/analytics-backend/src/main/resources/api-keys-local.yml
 backend/analytics-backend/target/classes/api-keys-local.yml
+**/application-local.yml
 
 # All compiled files 
 backend/analytics-backend/target/

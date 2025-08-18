@@ -1,5 +1,10 @@
 name: flutter_solar_terrain_analytics
-description: "A new Flutter project."
+description: "Solar Terrain Analytics - Mobile and Web application for solar potential analysis in Portugal."
+
+# Supported Platforms: Android, Web only
+# Removed platform folders: ios/, windows/, linux/, macos/
+# This app focuses on mobile (Android) and web deployment
+
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
