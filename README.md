@@ -1,145 +1,201 @@
-# Frontend
+<div align="center">
 
-This folder contains two UIs connecting to the Spring Boot backend (port 8081):
+![Solar Terrain Analytics](https://i.postimg.cc/m2ZwH00K/Logo.png)
 
-- web/ — a static HTML page.
-- flutter_solar_terrain_analytics/ — a Flutter app for mobile/desktop/web.
+*A Modern Web & Mobile Platform for Solar Terrain Analysis and Site Management*
 
-## Web UI
+<!-- Frontend -->
+![Flutter](https://img.shields.io/badge/Flutter-3.x-blue.svg)
+![Dart](https://img.shields.io/badge/Dart-3.x-blue.svg)
+![Google Maps](https://img.shields.io/badge/Google_Maps-API-yellow.svg)
+![Firebase](https://img.shields.io/badge/Firebase-Auth-orange.svg)
 
-Open `frontend/web/index.html` in your browser (or serve with a simple HTTP server). It defaults to `http://localhost:8081` and exposes:
-- Refresh: GET /api/counter
-- Increment: POST /api/counter/increment
+<!-- Backend -->
+![Java](https://img.shields.io/badge/Java-17+-red.svg)
+![Spring Boot](https://img.shields.io/badge/Spring_Boot-3.x-green.svg)
+![Maven](https://img.shields.io/badge/Maven-Build-blueviolet.svg)
+![REST API](https://img.shields.io/badge/REST-API-lightgrey.svg)
 
-## Flutter app (flutter_solar_terrain_analytics)
+<!-- General -->
+![Cross Platform](https://img.shields.io/badge/Cross--Platform-Web%20%7C%20Android-brightgreen.svg)
+![License](https://img.shields.io/badge/License-MIT-lightgrey.svg)
 
-Project name must be lowercase with underscores. Create the Flutter app inside `frontend/`:
+</div>
 
-```
-cd frontend
-flutter create --org com.solarterrain --project-name flutter_solar_terrain_analytics flutter_solar_terrain_analytics
-```
+## Features
 
-Then add dependency and code:
-- Edit `frontend/flutter_solar_terrain_analytics/pubspec.yaml` and add:
-  `http: ^1.2.2` under dependencies.
-- Replace `lib/main.dart` with the app provided in this README section below.
+### Interactive Solar Terrain Analysis
+- Draw custom areas on a map to analyze solar potential
+- Real-time shading and light intensity heatmaps
+- Save, view, and manage analyzed sites
+- Visualize and compare multiple terrains
 
-Run it:
+### Multi-Platform Support
+- Web dashboard (Flutter Web)
+- Android APK (Flutter)
+- Responsive UI for desktop and mobile
 
-- Mobile (Android emulator):
-  - Backend at `http://10.0.2.2:8081`.
-  - Commands:
+### Secure User Management
+- Firebase Authentication (Google Sign-In)
+- User-specific saved sites and data
 
-```
-cd frontend\flutter_solar_terrain_analytics
-flutter pub get
-flutter run
-```
+### Advanced Backend Analytics
+- Spring Boot REST API for solar and terrain analysis
+- Polygon-based area calculations
+- Integration with elevation and weather APIs
+- CORS and security configuration for safe deployment
 
-- Desktop (Windows):
-  - Enable once: `flutter config --enable-windows-desktop`
-  - Use `http://localhost:8081`
+### Data Visualization
+- Google Maps integration for area selection and display
+- Custom heatmap overlays for solar intensity
+- Saved sites list with quick view and delete options
 
-- Web:
-  - `flutter run -d chrome` (may require CORS allowances)
+## Technical Stack
 
-In the app you can edit the base URL at the top.
+| Component      | Technology         | Purpose                       |
+|----------------|-------------------|-------------------------------|
+| Frontend       | Flutter (Dart)    | Web & Mobile UI               |
+| Maps           | Google Maps API   | Map display & area drawing    |
+| Auth           | Firebase Auth     | User authentication           |
+| Backend        | Spring Boot (Java)| REST API & analytics          |
+| Data Storage   | (Pluggable)       | Saved sites, user data        |
 
-Main Dart example (paste into `lib/main.dart`):
+## Installation
 
-```
-import 'dart:convert';
-import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
+### Prerequisites
+- [Flutter 3.x](https://flutter.dev/docs/get-started/install) (with Dart)
+- [Java 17+](https://adoptopenjdk.net/) (for backend)
+- [Node.js](https://nodejs.org/) (for Firebase CLI, optional)
+- Google Maps API Key
+- Firebase Project (for Auth)
 
-void main() => runApp(const CounterApp());
+### Dependencies Included
+- All Flutter and backend dependencies are managed via `pubspec.yaml` and `pom.xml`.
 
-class CounterApp extends StatelessWidget {
-  const CounterApp({super.key});
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(title: 'Solar Terrain Analytics', theme: ThemeData(useMaterial3: true), home: const CounterHome());
-  }
-}
+### Build Instructions
 
-class CounterHome extends StatefulWidget {
-  const CounterHome({super.key});
-  @override
-  State<CounterHome> createState() => _CounterHomeState();
-}
+#### Backend (Spring Boot)
+1. Clone the repository
+2. Configure your API keys and Firebase credentials in `backend/analytics-backend/src/main/resources/application-local.yml`
+3. Run: cd backend/analytics-backend ./mvnw spring-boot:run
 
-class _CounterHomeState extends State<CounterHome> {
-  String baseUrl = 'http://10.0.2.2:8081';
-  int? count;
-  String status = 'Idle';
-  bool loading = false;
+The backend will start on `http://localhost:8081` by default.
 
-  Uri _uri(String path) => Uri.parse('${baseUrl.replaceAll(RegExp(r'/+
+#### Frontend (Flutter)
+1. Clone the repository
+2. Configure your Firebase and Google Maps keys in `lib/firebase_options.dart` and `web/index.html`
+3. Run for web: cd frontend/flutter_solar_terrain_analytics flutter run -d chrome
+
+Or build APK for Android: flutter build apk
 
 
-$'), '')}$path');
+<div align="center">
 
-  Future<void> _refresh() async {
-    setState(() { loading = true; status = 'Loading…'; });
-    try {
-      final res = await http.get(_uri('/api/counter'));
-      if (res.statusCode != 200) throw Exception('HTTP ${res.statusCode}');
-      final data = json.decode(res.body) as Map<String, dynamic>;
-      setState(() { count = data['count'] as int; status = 'OK'; });
-    } catch (e) { setState(() { status = 'Error: $e'; }); }
-    finally { setState(() { loading = false; }); }
-  }
+## Demonstration
 
-  Future<void> _increment() async {
-    setState(() { loading = true; status = 'Incrementing…'; });
-    try {
-      final res = await http.post(_uri('/api/counter/increment'));
-      if (res.statusCode != 200) throw Exception('HTTP ${res.statusCode}');
-      final data = json.decode(res.body) as Map<String, dynamic>;
-      setState(() { count = data['count'] as int; status = 'Incremented'; });
-    } catch (e) { setState(() { status = 'Error: $e'; }); }
-    finally { setState(() { loading = false; }); }
-  }
+[![Watch Demo Video](https://img.shields.io/badge/_Watch_Demo-YouTube-red?style=for-the-badge&logo=youtube)](https://youtu.be/6N8IoaQvjco)
 
-  @override
-  void initState() { super.initState(); _refresh(); }
+![App Demo](https://i.postimg.cc/zXJrRGD5/gify.gif)
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Solar Terrain Analytics')),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-          const Text('Backend base URL'),
-          Row(children: [
-            Expanded(child: TextFormField(initialValue: baseUrl, onChanged: (v) => baseUrl = v, decoration: const InputDecoration(border: OutlineInputBorder(), hintText: 'http://localhost:8081'))),
-            const SizedBox(width: 8),
-            FilledButton(onPressed: loading ? null : _refresh, child: const Text('Refresh')),
-          ]),
-          const SizedBox(height: 24),
-          Center(child: Text(count?.toString() ?? '—', style: const TextStyle(fontSize: 64, fontWeight: FontWeight.bold))),
-          const SizedBox(height: 16),
-          FilledButton.icon(onPressed: loading ? null : _increment, icon: const Icon(Icons.add), label: const Text('Increment')),
-          const SizedBox(height: 12),
-          Text(status, style: TextStyle(color: status.startsWith('Error') ? Colors.red : Colors.green)),
-          const Spacer(),
-          const Text('Tip: On Android emulator use http://10.0.2.2:8081 to reach localhost.'),
-        ]),
-      ),
-    );
-  }
-}
-```
+*Interactive demonstration of Solar Terrain Analytics showing area drawing, analysis, and site management*
 
-## Backend
+</div>
 
-Start backend first:
+## Usage Guide
 
-```
-cd backend/analytics-backend
-mvnw.cmd spring-boot:run
-```
+### Basic Operation
+1. Sign in with your Google account
+2. Draw an area on the map to analyze solar potential
+3. View the heatmap and analysis results in the left panel
+4. Save analyzed areas for later review
+5. Manage saved sites from the dashboard
 
-CORS is enabled via `@CrossOrigin(origins = "*")` on the controller.
+### Supported Platforms
+
+| Platform | Status      | Features                |
+|----------|-------------|-------------------------|
+| Web      | Full        | All features            |
+| Android  | Full        | All features            |
+| iOS      | Planned     | (Requires setup)        |
+
+### Keyboard Shortcuts (Web)
+
+| Key         | Action                  |
+|-------------|-------------------------|
+| Mouse Click | Add polygon vertex      |
+| ESC         | Cancel drawing          |
+| ENTER       | Complete area drawing   |
+
+## UI Panels
+
+### Map Panel
+- Draw and select areas directly on Google Maps
+- View heatmap overlays for solar intensity
+- Zoom, pan, and reset view controls
+
+### Analysis Panel
+- Real-time solar and shading analysis
+- Detailed metrics and heatmap legend
+- Save and name analyzed areas
+
+### Saved Sites
+- List of user-saved terrains
+- Quick view and delete options
+- Persistent across sessions
+
+## Architecture
+
+### Modular Design
+
+#### Key Components
+- **GoogleMapsDashboard**: Main UI for map and analysis
+- **ApiService**: Handles all backend communication
+- **SolarAnalysisPanel**: Displays analysis results
+- **SavedSite Model**: Represents saved terrain data
+- **Spring Boot Controllers**: REST endpoints for analysis and site management
+
+## Backend API
+
+### Main Endpoints
+
+| Endpoint                | Method | Description                       |
+|-------------------------|--------|-----------------------------------|
+| `/api/health`           | GET    | Health check                      |
+| `/api/analyze-area`     | POST   | Analyze a polygon area            |
+| `/api/sites`            | GET    | List saved sites                  |
+| `/api/sites`            | POST   | Save a new site                   |
+| `/api/sites/{id}`       | DELETE | Delete a saved site               |
+
+## Performance & Security
+
+- Efficient polygon and shading calculations
+- CORS configuration for safe cross-origin requests
+- Firebase Auth filter for secure user endpoints
+- Debug logging can be enabled/disabled via config
+
+## Configuration
+
+### Environment Variables & Keys
+- Set your Google Maps and Firebase keys in the appropriate config files
+- Restrict API keys in Google Cloud Console for security
+- Use `.gitignore` to prevent leaking sensitive files
+
+## Contributing
+
+We welcome contributions from developers of all skill levels! Whether you're fixing bugs, adding new features, improving documentation, or suggesting enhancements, your help is appreciated.
+
+### How to Contribute
+
+1. **Fork the repository** to your GitHub account
+2. **Create a feature branch** from the main branch (`git checkout -b feature/your-feature-name`)
+3. **Make your changes** and test them thoroughly
+4. **Commit your changes** with clear, descriptive messages
+5. **Push to your fork** (`git push origin feature/your-feature-name`)
+6. **Submit a pull request** with a detailed description of your changes
+
+## Acknowledgments
+
+- [Flutter](https://flutter.dev/) - Cross-platform UI toolkit
+- [Spring Boot](https://spring.io/projects/spring-boot) - Java backend framework
+- [Google Maps Platform](https://developers.google.com/maps) - Map and geospatial APIs
+- [Firebase](https://firebase.google.com/) - Authentication and backend
